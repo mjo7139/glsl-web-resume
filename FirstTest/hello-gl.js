@@ -29,16 +29,36 @@ function helloTriangle() {
     gl.bindBuffer(gl.ARRAY_BUFFER, circleGeoBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, circleLocCpuBuffer, gl.STATIC_DRAW);
 
-    const vertexShaderSourceCode = '#version 300 es 
-    precision mediump Float;
+    const vertexShaderSourceCode = `#version 300 es
+    precision mediump float;
+
+    in vec2 vertexPosition;
     
     void main() {
-        
-    }';
+        gl_Position = vec4(vertexPosition, 0.0, 1.0);
+    }`;
+
+    const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vertexShader, vertexShaderSourceCode);
+    gl.compileShader(vertexShader);
+    if(!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
+        const compileError = gl.getShaderInfoLog(vertexShader);
+        showError(`Failed to COMPILE vertex shader - ${compileError}`);
+        return;
+    }
+
+    const fragmentShaderSourceCode = `#version 300 es
+    precision mediump float;
+    
+    out vec4 fragColor;
+
+    void main() {
+        fragColor = vec4(0.294, 0.0, 0.51, 1.0);
+    }`;
 }
 
 try {
     helloTriangle();
 } catch(e) {
-    showError('Uncaught JavaScript exception: ${e}');
+    showError(`Uncaught JavaScript exception: ${e}`);
 }
